@@ -320,11 +320,16 @@
 
         .result-info {
             flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .result-name {
             font-weight: bold;
             color: #2d5a27;
+            text-align: center;
         }
 
         .result-bar-container {
@@ -596,13 +601,15 @@
         function renderContestants() {
             const container = document.getElementById('contestants');
             container.innerHTML = '';
+            const voteNotStarted = !isVoteStarted();
             
             contestants.forEach(contestant => {
                 const card = document.createElement('div');
                 card.className = 'contestant-card';
                 card.dataset.id = contestant.id;
                 
-                if (hasVotedToday) card.classList.add('disabled');
+                // 投票未开始或已投票，禁用卡片
+                if (hasVotedToday || voteNotStarted) card.classList.add('disabled');
                 
                 card.innerHTML = `
                     <div class="contestant-avatar">${contestant.id}</div>
@@ -611,7 +618,8 @@
                     <div class="contestant-number">选手 ${contestant.id} 号</div>
                 `;
                 
-                if (!hasVotedToday) {
+                // 只有投票已开始且今日未投票，才能点击
+                if (!hasVotedToday && !voteNotStarted) {
                     card.addEventListener('click', () => toggleContestant(contestant.id));
                 }
                 
@@ -620,7 +628,8 @@
         }
 
         function toggleContestant(id) {
-            if (hasVotedToday) return;
+            // 投票未开始或已投票，禁止选择
+            if (hasVotedToday || !isVoteStarted()) return;
             
             const index = selectedIds.indexOf(id);
             if (index > -1) {
@@ -637,7 +646,8 @@
 
         function updateSelectedDisplay() {
             document.getElementById('selectedCount').textContent = selectedIds.length;
-            document.getElementById('voteBtn').disabled = selectedIds.length === 0 || hasVotedToday;
+            // 投票未开始、已投票或未选择选手，禁用按钮
+            document.getElementById('voteBtn').disabled = selectedIds.length === 0 || hasVotedToday || !isVoteStarted();
         }
 
         function updateCardStyles() {
