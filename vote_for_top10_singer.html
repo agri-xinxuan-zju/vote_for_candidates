@@ -158,19 +158,23 @@
         .vote-info {
             text-align: center;
             margin-bottom: 20px;
-            padding: 15px;
+            padding: 18px;
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             border-radius: 10px;
         }
 
-        .vote-info span {
+        .vote-count {
             color: #2d5a27;
             font-weight: bold;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 8px;
         }
 
-        .vote-info small {
+        .vote-status {
             color: #558b2f;
+            font-size: 0.95rem;
+            display: block;
         }
 
         .contestants-grid {
@@ -206,39 +210,45 @@
         }
 
         .contestant-avatar {
-            width: 75px;
-            height: 75px;
+            width: clamp(60px, 18vw, 75px);
+            height: clamp(60px, 18vw, 75px);
             border-radius: 50%;
             background: linear-gradient(135deg, #00b894 0%, #2d5a27 100%);
-            margin: 0 auto 15px;
+            margin: 0 auto 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 5vw, 1.8rem);
             font-weight: bold;
         }
 
         .contestant-name {
-            font-size: 1.1rem;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
             font-weight: bold;
             color: #2d5a27;
             margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .contestant-song {
-            font-size: 0.85rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
             color: #66bb6a;
             margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .contestant-number {
             display: inline-block;
             background: linear-gradient(135deg, #00b894 0%, #2d5a27 100%);
             color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
             font-weight: bold;
         }
 
@@ -407,22 +417,22 @@
         /* 响应式设计 */
         @media (max-width: 600px) {
             .contestants-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 12px;
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
             }
 
-            .contestant-avatar {
-                width: 60px;
-                height: 60px;
-                font-size: 1.4rem;
+            .contestant-card {
+                padding: 15px 10px;
             }
 
             .contestant-name {
-                font-size: 1rem;
+                font-size: clamp(0.85rem, 4vw, 1rem);
+                min-height: 1.4em;
             }
 
-            .contestant-class {
-                font-size: 0.75rem;
+            .contestant-song {
+                font-size: clamp(0.7rem, 3vw, 0.8rem);
+                min-height: 1.4em;
             }
 
             .stats {
@@ -455,7 +465,7 @@
     <div class="container">
         <div class="header">
             <h1>🌾 农学院十佳歌手 🌾</h1>
-            <p>十八强投票通道</p>
+            <p>初赛18进12投票通道</p>
             <div class="deadline">投票时间：2026年5月13日 - 5月17日</div>
         </div>
 
@@ -469,8 +479,8 @@
 
         <div class="poll-card">
             <div class="vote-info">
-                <span id="selectedCount">0</span> / 3 票已选择
-                <small id="voteStatus">今日剩余投票机会：1次</small>
+                <span class="vote-count" id="selectedCount">0</span> / 3 票已选择
+                <span class="vote-status" id="voteStatus">今日剩余投票机会：1次</span>
             </div>
 
             <div class="contestants-grid" id="contestants">
