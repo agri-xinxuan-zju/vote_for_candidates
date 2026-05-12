@@ -1180,6 +1180,17 @@
             document.getElementById('totalVoters').textContent = totalVoters;
         }
 
+        // 手动刷新数据
+        function manualRefresh() {
+            console.log('🔄 用户手动刷新数据');
+            showMessage('info', '正在刷新数据...');
+            if (firebaseInitialized && db) {
+                loadVotesFromCloud();
+            } else {
+                showMessage('error', '云端未连接，请稍后重试');
+            }
+        }
+
         function showMessage(type, text) {
             const existing = document.querySelector('.message');
             if (existing) existing.remove();
