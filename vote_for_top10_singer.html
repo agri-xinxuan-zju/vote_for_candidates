@@ -577,7 +577,7 @@
         <div class="header">
             <h1>🌾 农学院十佳歌手 🌾</h1>
             <p>初赛18进12投票通道</p>
-            <div class="deadline">投票时间：2026年5月12日12:00 - 5月17日18:00</div>
+            <div class="deadline">投票时间：2026年5月12日21:00 - 5月17日18:00</div>
         </div>
 
         <div class="rules">
@@ -699,8 +699,8 @@
             { id: 18, name: '项俊豪', song: '《想见你想见你想见你》', votes: 0, video: 'https://videos-top10-singer-1432423219.cos.ap-guangzhou.myqcloud.com/%E9%A1%B9%E4%BF%8A%E8%B1%AA.mp4' }
         ];
 
-        // 投票开始时间：2026年5月12日12点
-        const VOTE_START_TIME = new Date('2026-05-12T12:00:00').getTime();
+        // 投票开始时间：2026年5月12日21点
+        const VOTE_START_TIME = new Date('2026-05-12T21:00:00').getTime();
         const STORAGE_KEY_VOTE_STARTED = 'vote_started_20260512';
 
         const STORAGE_KEY_VOTED = 'singer_vote_date';
@@ -824,7 +824,7 @@
         function checkVoteStatus() {
             // 检查投票是否开始
             if (!isVoteStarted()) {
-                document.getElementById('voteStatus').textContent = '投票尚未开始，请等待5月12日12:00';
+                document.getElementById('voteStatus').textContent = '投票尚未开始，请等待5月12日21:00';
                 document.getElementById('voteStatus').style.color = '#ff9800';
                 document.getElementById('voteBtn').disabled = true;
                 document.querySelectorAll('.contestant-card').forEach(card => {
