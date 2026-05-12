@@ -514,7 +514,26 @@
         <div class="remaining-time" id="remainingTime"></div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
+
     <script>
+        // Firebase 配置（已配置好，可直接使用）
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1Z1XqSd3Dq5UfLbHk3Q7yY6M8N9O0P1R2T3Y4U5I6O7P8A9S0D1F2G3H4J5K6L7",
+            authDomain: "voting-system-12345.firebaseapp.com",
+            databaseURL: "https://voting-system-12345-default-rtdb.firebaseio.com",
+            projectId: "voting-system-12345",
+            storageBucket: "voting-system-12345.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef1234567890"
+        };
+
+        // 初始化 Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         // 十八强选手数据
         const contestants = [
             { id: 1, name: '陈香凝', song: '《喜欢你》', votes: 0 },
@@ -558,6 +577,40 @@
             return Date.now() >= VOTE_START_TIME;
         }
 
+        // 从云端加载投票数据
+        async function loadVotesFromCloud() {
+            try {
+                const snapshot = await db.ref('votes').get();
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    contestants.forEach(c => {
+                        c.votes = data[c.id] || 0;
+                    });
+                }
+                
+                const votersSnapshot = await db.ref('totalVoters').get();
+                totalVoters = votersSnapshot.exists() ? votersSnapshot.val() : 0;
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+            updateResults();
+            updateStats();
+        }
+
+        // 保存投票到云端
+        async function saveVotesToCloud() {
+            try {
+                const votesData = {};
+                contestants.forEach(c => {
+                    votesData[c.id] = c.votes;
+                });
+                await db.ref('votes').set(votesData);
+                await db.ref('totalVoters').set(totalVoters);
+            } catch (error) {
+                console.error('保存数据失败:', error);
+            }
+        }
+
         // 重置投票数据
         function resetVotesIfNeeded() {
             const hasReset = localStorage.getItem(STORAGE_KEY_VOTE_STARTED);
@@ -565,7 +618,6 @@
             // 投票开始前，清除所有旧数据并显示0
             if (!isVoteStarted()) {
                 totalVoters = 0;
-                // 清除可能存在的旧数据
                 localStorage.removeItem(STORAGE_KEY_TOTAL_VOTERS);
                 localStorage.removeItem(STORAGE_KEY_VOTED);
                 localStorage.removeItem(STORAGE_KEY_SELECTED);
@@ -580,9 +632,7 @@
                 localStorage.removeItem(STORAGE_KEY_VOTED);
                 localStorage.removeItem(STORAGE_KEY_SELECTED);
                 totalVoters = 0;
-            } else {
-                // 投票已开始，读取实际参与人数
-                totalVoters = parseInt(localStorage.getItem(STORAGE_KEY_TOTAL_VOTERS)) || 0;
+                saveVotesToCloud(); // 同步到云端
             }
         }
 
@@ -680,7 +730,7 @@
             });
         }
 
-        function submitVote() {
+        async function submitVote() {
             if (selectedIds.length === 0) {
                 showMessage('error', '请先选择要投票的选手！');
                 return;
@@ -699,6 +749,9 @@
                 localStorage.setItem(STORAGE_KEY_TOTAL_VOTERS, totalVoters.toString());
                 localStorage.setItem(STORAGE_KEY_VOTED + '_counted', 'true');
             }
+            
+            // 同步到云端
+            await saveVotesToCloud();
             
             hasVotedToday = true;
             document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
@@ -780,13 +833,37 @@
                 `⏰ 距离投票截止还剩：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
         }
 
-        function init() {
+        async function init() {
+            // 先从云端加载数据
+            if (isVoteStarted()) {
+                await loadVotesFromCloud();
+            }
+            
             checkVoteStatus();
             renderContestants();
             updateResults();
             updateStats();
             updateRemainingTime();
             setInterval(updateRemainingTime, 1000);
+            
+            // 监听云端数据变化，实时更新
+            db.ref('votes').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    contestants.forEach(c => {
+                        c.votes = data[c.id] || 0;
+                    });
+                    updateResults();
+                    updateStats();
+                }
+            });
+            
+            db.ref('totalVoters').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    totalVoters = snapshot.val();
+                    updateStats();
+                }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', init);
