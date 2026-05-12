@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* 背景装饰 */
         .bg-decoration {
             position: fixed;
             pointer-events: none;
@@ -177,7 +176,6 @@
             display: block;
         }
 
-        /* 视频弹窗样式 */
         .video-modal {
             position: fixed;
             top: 0;
@@ -354,7 +352,7 @@
         }
 
         .contestant-card.disabled .contestant-video-btn {
-            opacity: 1; /* 视频按钮始终可见可点击 */
+            opacity: 1;
             pointer-events: auto;
         }
 
@@ -475,22 +473,6 @@
             background: linear-gradient(135deg, #f8faf8 0%, #e8f5e9 100%);
             border-radius: 12px;
         }
-        
-        .sync-status {
-            text-align: center;
-            margin-top: 15px;
-            padding: 10px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .sync-status.online {
-            color: #2e7d32;
-        }
-        
-        .sync-status.offline {
-            color: #c62828;
-        }
 
         .stat-item {
             text-align: center;
@@ -506,6 +488,14 @@
             font-size: 0.95rem;
             color: #558b2f;
             margin-top: 5px;
+        }
+
+        .sync-status {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 0.85rem;
+            color: #666;
         }
 
         .message {
@@ -532,6 +522,11 @@
             color: #721c24;
         }
 
+        .message.info {
+            background: #cce5ff;
+            color: #004085;
+        }
+
         .remaining-time {
             text-align: center;
             margin-top: 20px;
@@ -541,7 +536,6 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
 
-        /* 响应式设计 */
         @media (max-width: 600px) {
             .contestants-grid {
                 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -581,7 +575,6 @@
     </style>
 </head>
 <body>
-    <!-- 背景装饰元素 -->
     <div class="bg-decoration bg-leaf1">🍃</div>
     <div class="bg-decoration bg-leaf2">🌿</div>
     <div class="bg-decoration bg-grass1">🌱</div>
@@ -610,13 +603,12 @@
                 <span class="vote-status" id="voteStatus">今日剩余投票机会：1次</span>
             </div>
 
-            <!-- 视频弹窗 -->
             <div class="video-modal" id="videoModal" style="display: none;">
                 <div class="video-modal-overlay" onclick="closeVideoModal()"></div>
                 <div class="video-modal-content">
                     <button class="video-close-btn" onclick="closeVideoModal()">×</button>
                     <div class="video-player-container">
-                        <video id="player" controls poster="">
+                        <video id="player" controls>
                             <source id="videoSource" src="" type="video/mp4">
                         </video>
                     </div>
@@ -627,9 +619,7 @@
                 </div>
             </div>
 
-            <div class="contestants-grid" id="contestants">
-                <!-- 选手卡片 -->
-            </div>
+            <div class="contestants-grid" id="contestants"></div>
 
             <button class="vote-btn" id="voteBtn" onclick="submitVote()">提交投票</button>
 
@@ -648,16 +638,13 @@
                     <div class="stat-label">参与人数</div>
                 </div>
             </div>
-            
+
             <div style="text-align:center;margin-top:15px;">
-                <button onclick="manualRefresh()" style="padding:8px 16px;background:#2196F3;color:white;border:none;border-radius:4px;cursor:pointer;margin-right:10px;">
+                <button onclick="manualRefresh()" style="padding:8px 16px;background:#2196F3;color:white;border:none;border-radius:4px;cursor:pointer;">
                     🔄 手动刷新数据
                 </button>
-                <button onclick="initTestData()" style="padding:8px 16px;background:#FF9800;color:white;border:none;border-radius:4px;cursor:pointer;">
-                    🧪 初始化测试数据
-                </button>
             </div>
-            
+
             <div class="sync-status" id="syncStatus">
                 <span id="syncIcon">🔄</span> <span id="syncText">正在连接云端...</span>
             </div>
@@ -667,19 +654,17 @@
     </div>
 
     <script>
-        // 是否启用云端同步
-        const ENABLE_CLOUD_SYNC = true; // 设置为 true 启用云端同步
+        const ENABLE_CLOUD_SYNC = true;
         let db = null;
         let firebaseInitialized = false;
 
-        // 如果启用云端同步，加载 Firebase SDK（使用兼容版本 8.x）
         if (ENABLE_CLOUD_SYNC) {
             const script1 = document.createElement('script');
             script1.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
             script1.onload = loadFirebaseDatabase;
             script1.onerror = () => {
-                console.error('❌ Firebase App SDK 加载失败');
-                showMessage('error', '数据同步服务加载失败，请刷新页面重试');
+                console.error('Firebase SDK 加载失败');
+                showMessage('error', '数据同步服务加载失败，请刷新页面');
             };
             document.head.appendChild(script1);
         }
@@ -689,14 +674,13 @@
             script2.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
             script2.onload = initFirebase;
             script2.onerror = () => {
-                console.error('❌ Firebase Database SDK 加载失败');
-                showMessage('error', '数据同步服务加载失败，请刷新页面重试');
+                console.error('Firebase Database SDK 加载失败');
+                showMessage('error', '数据同步服务加载失败，请刷新页面');
             };
             document.head.appendChild(script2);
         }
 
         function initFirebase() {
-            // ⚠️ 请替换为你的 Firebase 配置信息
             const firebaseConfig = {
                 apiKey: "AIzaSyDKwD96gPVTZKAEyD_yJXRWVggNMpTWVF8",
                 authDomain: "vote-for-candidates.firebaseapp.com",
@@ -708,58 +692,34 @@
             };
             try {
                 if (!firebase.apps.length) {
-                    const app = firebase.initializeApp(firebaseConfig);
+                    firebase.initializeApp(firebaseConfig);
                 }
                 db = firebase.database();
                 firebaseInitialized = true;
-                console.log('✅ Firebase 初始化成功');
-                
-                // 显示在线状态
-                updateSyncStatus(true, '云端连接成功，数据实时同步中');
-                
-                // 监听连接状态
-                db.ref('.info/connected').on('value', snapshot => {
-                    const connected = snapshot.val();
-                    if (connected) {
-                        updateSyncStatus(true, '云端连接成功，数据实时同步中');
-                        console.log('✅ Firebase 已连接');
-                    } else {
-                        updateSyncStatus(false, '云端连接断开，正在重连...');
-                        console.log('⚠️ Firebase 连接断开');
-                    }
-                });
-                
-                // Firebase 初始化完成后，重新加载数据并设置监听器
+                console.log('Firebase 初始化成功');
+                updateSyncStatus(true, '云端连接成功');
                 loadVotesFromCloud();
                 setupFirebaseListeners();
             } catch (error) {
-                console.error('❌ Firebase 初始化失败:', error);
+                console.error('Firebase 初始化失败:', error);
                 updateSyncStatus(false, '数据同步服务初始化失败');
-                showMessage('error', '数据同步服务初始化失败，请刷新页面重试');
             }
         }
-        
-        // 更新同步状态显示
+
         function updateSyncStatus(isOnline, text) {
             const statusEl = document.getElementById('syncStatus');
             const iconEl = document.getElementById('syncIcon');
             const textEl = document.getElementById('syncText');
-            
             if (!statusEl) return;
-            
             statusEl.className = 'sync-status ' + (isOnline ? 'online' : 'offline');
             iconEl.textContent = isOnline ? '✅' : '⚠️';
             textEl.textContent = text;
         }
 
-        // 设置 Firebase 实时监听器
         function setupFirebaseListeners() {
             if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
-            
             try {
-                // 监听票数变化
                 db.ref('votes').on('value', (snapshot) => {
-                    console.log('📡 收到票数更新');
                     if (snapshot.exists()) {
                         const data = snapshot.val();
                         contestants.forEach(c => {
@@ -768,26 +728,18 @@
                         updateResults();
                         updateStats();
                     }
-                }, (error) => {
-                    console.error('❌ 监听票数变化失败:', error);
                 });
-                
-                // 监听投票人数变化
                 db.ref('totalVoters').on('value', (snapshot) => {
-                    console.log('📡 收到投票人数更新');
                     if (snapshot.exists()) {
                         totalVoters = snapshot.val();
                         updateStats();
                     }
-                }, (error) => {
-                    console.error('❌ 监听投票人数变化失败:', error);
                 });
             } catch (error) {
-                console.error('❌ 设置监听器失败:', error);
+                console.error('设置监听器失败:', error);
             }
         }
 
-        // 十八强选手数据（添加视频链接）
         const contestants = [
             { id: 1, name: '陈香凝', song: '《喜欢你》', votes: 0, video: 'https://videos-top10-singer-1432423219.cos.ap-guangzhou.myqcloud.com/%E9%99%88%E9%A6%99%E5%87%9D.mp4' },
             { id: 2, name: '宋靖宇', song: '《第一天》', votes: 0, video: 'https://videos-top10-singer-1432423219.cos.ap-guangzhou.myqcloud.com/%E5%AE%8B%E9%9D%96%E5%AE%87.mp4' },
@@ -809,10 +761,7 @@
             { id: 18, name: '项俊豪', song: '《想见你想见你想见你》', votes: 0, video: 'https://videos-top10-singer-1432423219.cos.ap-guangzhou.myqcloud.com/%E9%A1%B9%E4%BF%8A%E8%B1%AA.mp4' }
         ];
 
-        // 投票开始时间：2026年5月12日21点
         const VOTE_START_TIME = new Date('2026-05-12T21:00:00').getTime();
-        const STORAGE_KEY_VOTE_STARTED = 'vote_started_20260512';
-
         const STORAGE_KEY_VOTED = 'singer_vote_date';
         const STORAGE_KEY_SELECTED = 'singer_vote_selected';
         const STORAGE_KEY_TOTAL_VOTERS = 'singer_total_voters';
@@ -825,179 +774,84 @@
             return new Date().toISOString().split('T')[0];
         }
 
-        // 检查投票是否已开始（兼容微信浏览器）
         function isVoteStarted() {
             try {
-                const now = Date.now ? Date.now() : new Date().getTime();
-                return now >= VOTE_START_TIME;
+                return Date.now() >= VOTE_START_TIME;
             } catch (e) {
-                // 微信浏览器可能存在时间兼容性问题
-                const now = new Date();
-                const startTime = new Date('2026-05-12T12:00:00');
-                return now >= startTime;
+                return new Date() >= new Date('2026-05-12T12:00:00');
             }
         }
 
-        // 打开视频弹窗
         function openVideoModal(contestant) {
             const modal = document.getElementById('videoModal');
             const player = document.getElementById('player');
             const source = document.getElementById('videoSource');
-            
-            // 设置视频源
             source.src = contestant.video;
             player.load();
-            
-            // 设置选手信息
             document.getElementById('videoContestantName').textContent = contestant.name;
             document.getElementById('videoSongName').textContent = contestant.song;
-            
-            // 显示弹窗
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
-        // 关闭视频弹窗
         function closeVideoModal() {
             const modal = document.getElementById('videoModal');
             const player = document.getElementById('player');
-            
-            // 暂停视频
             player.pause();
-            
-            // 隐藏弹窗
             modal.style.display = 'none';
             document.body.style.overflow = '';
         }
 
-        // 从云端加载投票数据
         async function loadVotesFromCloud() {
-            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) {
-                console.log('⚠️ Firebase 未就绪，跳过加载云端数据');
-                return;
-            }
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
             try {
-                console.log('📥 开始从云端加载数据...');
-                updateSyncStatus(true, '正在加载数据...');
-                
                 const snapshot = await db.ref('votes').once('value');
-                console.log('📥 votes snapshot:', snapshot.val());
-                
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     contestants.forEach(c => {
                         c.votes = data[c.id] || 0;
                     });
-                    console.log('✅ 票数数据加载成功:', contestants.map(c => ({id: c.id, name: c.name, votes: c.votes})));
-                } else {
-                    console.log('ℹ️ 云端暂无票数数据，初始化全为0');
-                    contestants.forEach(c => c.votes = 0);
                 }
-                
                 const votersSnapshot = await db.ref('totalVoters').once('value');
                 totalVoters = votersSnapshot.exists() ? votersSnapshot.val() : 0;
-                console.log('✅ 投票人数加载成功:', totalVoters);
-                
                 updateResults();
                 updateStats();
-                updateSyncStatus(true, '数据加载完成，实时同步中');
             } catch (error) {
-                console.error('❌ 加载云端数据失败:', error);
-                updateSyncStatus(false, '数据加载失败: ' + error.message);
-                showMessage('error', '加载数据失败: ' + error.message);
+                console.error('加载数据失败:', error);
             }
         }
 
-        // 手动刷新数据
         function manualRefresh() {
-            console.log('🔄 用户手动刷新数据');
             showMessage('info', '正在刷新数据...');
             if (firebaseInitialized && db) {
                 loadVotesFromCloud();
             } else {
-                showMessage('error', '云端未连接，请稍后重试');
-            }
-        }
-        
-        // 初始化测试数据（仅用于测试）
-        async function initTestData() {
-            if (!firebaseInitialized || !db) {
                 showMessage('error', '云端未连接');
-                return;
-            }
-            
-            if (!confirm('确定要初始化测试数据吗？这会将所有票数重置为测试值。')) {
-                return;
-            }
-            
-            try {
-                console.log('🧪 开始初始化测试数据...');
-                const testData = {};
-                contestants.forEach(c => {
-                    testData[c.id] = Math.floor(Math.random() * 50);
-                });
-                
-                await db.ref('votes').set(testData);
-                await db.ref('totalVoters').set(Math.floor(Math.random() * 20) + 5);
-                
-                console.log('✅ 测试数据初始化成功:', testData);
-                showMessage('success', '测试数据初始化成功！');
-                loadVotesFromCloud();
-            } catch (error) {
-                console.error('❌ 初始化测试数据失败:', error);
-                showMessage('error', '初始化失败: ' + error.message);
-            }
-        }
-        
-        // 保存投票到云端 - 使用事务安全累加
-        async function saveVotesToCloud(votedIds, increaseVoters) {
-            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) {
-                console.log('⚠️ Firebase 未就绪，跳过保存云端数据');
-                return;
-            }
-            try {
-                console.log('📤 开始保存投票到云端，投票选手:', votedIds);
-                
-                // 1. 为每个选中的选手使用事务累加票数
-                for (const id of votedIds) {
-                    console.log('📍 正在为选手', id, '增加票数');
-                    await db.ref('votes/' + id).transaction(currentVotes => {
-                        const newVotes = (currentVotes || 0) + 1;
-                        console.log('📍 选手', id, '票数从', currentVotes, '更新为', newVotes);
-                        return newVotes;
-                    });
-                }
-                
-                // 2. 如果需要，使用事务累加投票人数
-                if (increaseVoters) {
-                    console.log('📍 正在增加投票人数');
-                    await db.ref('totalVoters').transaction(currentVoters => {
-                        const newCount = (currentVoters || 0) + 1;
-                        console.log('📍 投票人数从', currentVoters, '更新为', newCount);
-                        return newCount;
-                    });
-                }
-                
-                console.log('✅ 数据保存到云端成功');
-                showMessage('success', '投票已同步到云端！');
-            } catch (error) {
-                console.error('❌ 保存数据到云端失败:', error);
-                showMessage('error', '数据同步失败，但投票已提交');
             }
         }
 
-        // 重置投票数据 - 已禁用，避免清空云端数据
-        function resetVotesIfNeeded() {
-            // ⚠️ 此功能已禁用，不再自动重置投票数据
-            // 所有数据以云端 Firebase 为准
-            console.log('ℹ️ 投票数据从云端同步，不进行本地重置');
-            return;
+        async function saveVotesToCloud(votedIds, increaseVoters) {
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
+            try {
+                for (const id of votedIds) {
+                    await db.ref('votes/' + id).transaction(currentVotes => {
+                        return (currentVotes || 0) + 1;
+                    });
+                }
+                if (increaseVoters) {
+                    await db.ref('totalVoters').transaction(currentVoters => {
+                        return (currentVoters || 0) + 1;
+                    });
+                }
+                console.log('投票保存成功');
+            } catch (error) {
+                console.error('保存投票失败:', error);
+            }
         }
 
         function checkVoteStatus() {
-            // 检查投票是否开始
             if (!isVoteStarted()) {
-                document.getElementById('voteStatus').textContent = '投票尚未开始，请等待5月12日21:00';
+                document.getElementById('voteStatus').textContent = '投票尚未开始';
                 document.getElementById('voteStatus').style.color = '#ff9800';
                 document.getElementById('voteBtn').disabled = true;
                 document.querySelectorAll('.contestant-card').forEach(card => {
@@ -1014,7 +868,6 @@
                 document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
                 document.getElementById('voteStatus').style.color = '#c62828';
                 document.getElementById('voteBtn').disabled = true;
-                
                 const votedIds = JSON.parse(localStorage.getItem(STORAGE_KEY_SELECTED) || '[]');
                 selectedIds = votedIds;
                 updateSelectedDisplay();
@@ -1032,7 +885,6 @@
                 card.className = 'contestant-card';
                 card.dataset.id = contestant.id;
                 
-                // 投票未开始或已投票，禁用卡片
                 if (hasVotedToday || voteNotStarted) card.classList.add('disabled');
                 
                 card.innerHTML = `
@@ -1043,17 +895,14 @@
                     <div class="contestant-video-btn" data-id="${contestant.id}">▶ 观看视频</div>
                 `;
                 
-                // 投票进行中且未投票，绑定卡片点击选择
                 if (!hasVotedToday && !voteNotStarted) {
                     card.addEventListener('click', (e) => {
-                        // 如果点击的是视频按钮，不触发选择
                         if (!e.target.classList.contains('contestant-video-btn')) {
                             toggleContestant(contestant.id);
                         }
                     });
                 }
                 
-                // 视频按钮始终可以点击
                 card.querySelector('.contestant-video-btn').addEventListener('click', () => {
                     openVideoModal(contestant);
                 });
@@ -1063,9 +912,7 @@
         }
 
         function toggleContestant(id) {
-            // 投票未开始或已投票，禁止选择
             if (hasVotedToday || !isVoteStarted()) return;
-            
             const index = selectedIds.indexOf(id);
             if (index > -1) {
                 selectedIds.splice(index, 1);
@@ -1074,14 +921,12 @@
             } else {
                 showMessage('error', '最多只能选择3位选手！');
             }
-            
             updateSelectedDisplay();
             updateCardStyles();
         }
 
         function updateSelectedDisplay() {
             document.getElementById('selectedCount').textContent = selectedIds.length;
-            // 投票未开始、已投票或未选择选手，禁用按钮
             document.getElementById('voteBtn').disabled = selectedIds.length === 0 || hasVotedToday || !isVoteStarted();
         }
 
@@ -1105,42 +950,25 @@
                 return;
             }
             
-            const voteBtn = document.getElementById('voteBtn');
-            voteBtn.disabled = true;
-            voteBtn.textContent = '提交中...';
+            localStorage.setItem(STORAGE_KEY_VOTED, getTodayString());
+            localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(selectedIds));
             
-            try {
-                // 先检查是否需要增加投票人数
-                const increaseVoters = !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
-                
-                // 保存投票状态到本地，防止重复投票
-                localStorage.setItem(STORAGE_KEY_VOTED, getTodayString());
-                localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(selectedIds));
-                
-                if (increaseVoters) {
-                    localStorage.setItem(STORAGE_KEY_VOTED + '_counted', 'true');
-                }
-                
-                // 使用事务保存到云端
-                await saveVotesToCloud(selectedIds, increaseVoters);
-                
-                // 更新本地状态
-                hasVotedToday = true;
-                document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
-                document.getElementById('voteStatus').style.color = '#c62828';
-                voteBtn.textContent = '提交投票';
-                
-                // 更新已投票选手的高亮状态
-                highlightVotedContestants(selectedIds);
-                
-                showMessage('success', `🎉 投票成功！数据正在同步中...`);
-                
-            } catch (error) {
-                console.error('❌ 投票失败:', error);
-                showMessage('error', '投票失败，请重试');
-                voteBtn.disabled = false;
-                voteBtn.textContent = '提交投票';
+            const increaseVoters = !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
+            if (increaseVoters) {
+                localStorage.setItem(STORAGE_KEY_VOTED + '_counted', 'true');
             }
+            
+            showMessage('info', '投票提交中...');
+            await saveVotesToCloud(selectedIds, increaseVoters);
+            
+            hasVotedToday = true;
+            document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
+            document.getElementById('voteStatus').style.color = '#c62828';
+            document.getElementById('voteBtn').disabled = true;
+            
+            updateResults();
+            updateStats();
+            showMessage('success', `投票成功！您已为 ${selectedIds.length} 位选手投票`);
         }
 
         function updateResults() {
@@ -1168,27 +996,14 @@
                         </div>
                     </div>
                 `;
-                
                 container.appendChild(item);
             });
         }
 
         function updateStats() {
             const totalVotes = contestants.reduce((sum, c) => sum + c.votes, 0);
-            
             document.getElementById('totalVotes').textContent = totalVotes;
             document.getElementById('totalVoters').textContent = totalVoters;
-        }
-
-        // 手动刷新数据
-        function manualRefresh() {
-            console.log('🔄 用户手动刷新数据');
-            showMessage('info', '正在刷新数据...');
-            if (firebaseInitialized && db) {
-                loadVotesFromCloud();
-            } else {
-                showMessage('error', '云端未连接，请稍后重试');
-            }
         }
 
         function showMessage(type, text) {
@@ -1225,28 +1040,12 @@
         }
 
         function init() {
-            console.log('🚀 应用初始化...');
-            
-            // 防止微信浏览器缓存，自动添加时间戳
-            if (window.location.search.indexOf('t=') === -1) {
-                const newUrl = window.location.pathname + '?t=' + Date.now() + window.location.hash;
-                console.log('🔄 自动添加时间戳防止缓存，重定向中...');
-                window.location.replace(newUrl);
-                return;
-            }
-            
-            // 显示加载状态
-            document.getElementById('totalVotes').textContent = '加载中...';
-            document.getElementById('totalVoters').textContent = '加载中...';
-            document.getElementById('resultsList').innerHTML = '<div style="text-align:center;color:#888;padding:20px;">正在加载投票数据...</div>';
-            
-            // 检查投票状态和渲染界面
             checkVoteStatus();
             renderContestants();
+            updateResults();
+            updateStats();
             updateRemainingTime();
             setInterval(updateRemainingTime, 1000);
-            
-            console.log('✅ 页面初始化完成，等待 Firebase 连接...');
         }
 
         document.addEventListener('DOMContentLoaded', init);
