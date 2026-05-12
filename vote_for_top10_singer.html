@@ -558,15 +558,25 @@
             return Date.now() >= VOTE_START_TIME;
         }
 
-        // 重置投票数据（投票开始前清零）
+        // 重置投票数据
         function resetVotesIfNeeded() {
             const hasReset = localStorage.getItem(STORAGE_KEY_VOTE_STARTED);
-            if (!hasReset && isVoteStarted()) {
-                // 重置所有票数
+            
+            // 投票开始前，确保参与人数显示为0
+            if (!isVoteStarted()) {
+                totalVoters = 0;
+                return;
+            }
+            
+            // 投票开始时，重置所有数据
+            if (!hasReset) {
                 contestants.forEach(c => c.votes = 0);
                 localStorage.setItem(STORAGE_KEY_VOTE_STARTED, 'true');
                 localStorage.removeItem(STORAGE_KEY_TOTAL_VOTERS);
                 totalVoters = 0;
+            } else {
+                // 投票已开始，读取实际参与人数
+                totalVoters = parseInt(localStorage.getItem(STORAGE_KEY_TOTAL_VOTERS)) || 0;
             }
         }
 
