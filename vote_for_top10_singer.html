@@ -562,9 +562,13 @@
         function resetVotesIfNeeded() {
             const hasReset = localStorage.getItem(STORAGE_KEY_VOTE_STARTED);
             
-            // 投票开始前，确保参与人数显示为0
+            // 投票开始前，清除所有旧数据并显示0
             if (!isVoteStarted()) {
                 totalVoters = 0;
+                // 清除可能存在的旧数据
+                localStorage.removeItem(STORAGE_KEY_TOTAL_VOTERS);
+                localStorage.removeItem(STORAGE_KEY_VOTED);
+                localStorage.removeItem(STORAGE_KEY_SELECTED);
                 return;
             }
             
@@ -573,6 +577,8 @@
                 contestants.forEach(c => c.votes = 0);
                 localStorage.setItem(STORAGE_KEY_VOTE_STARTED, 'true');
                 localStorage.removeItem(STORAGE_KEY_TOTAL_VOTERS);
+                localStorage.removeItem(STORAGE_KEY_VOTED);
+                localStorage.removeItem(STORAGE_KEY_SELECTED);
                 totalVoters = 0;
             } else {
                 // 投票已开始，读取实际参与人数
