@@ -623,29 +623,29 @@
             if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
             try {
                 const userId = getUserIdentifier();
-                
+
                 // 记录用户投票状态，防止重复投票
                 await db.ref('votedUsers/' + userId).set(getTodayString());
-                
+
                 // 如果是首次投票，记录到首次投票列表
                 if (increaseVoters) {
                     await db.ref('firstTimeVoters/' + userId).set(true);
                 }
-                
+
                 // 更新票数
                 for (const id of votedIds) {
                     await db.ref('votes/' + id).transaction(currentVotes => {
                         return (currentVotes || 0) + 1;
                     });
                 }
-                
+
                 // 更新参与人数
                 if (increaseVoters) {
                     await db.ref('totalVoters').transaction(currentVoters => {
                         return (currentVoters || 0) + 1;
                     });
                 }
-                
+
                 console.log('投票保存到云端成功');
             } catch (error) {
                 console.error('保存到云端失败:', error);
@@ -673,7 +673,7 @@
             { id: 18, name: '项俊豪', song: '《想见你想见你想见你》', votes: 0, video: 'https://b23.tv/WclnjVh' },
         ];
 
-        const VOTE_START_TIME = new Date('2026-05-12T21:00:00').getTime();
+        const VOTE_START_TIME = new Date('2026-05-12T21:00:00+08:00').getTime();
         const STORAGE_KEY_VOTED = 'singer_vote_date';
         const STORAGE_KEY_SELECTED = 'singer_vote_selected';
         const STORAGE_KEY_TOTAL_VOTERS = 'singer_total_voters';
@@ -683,8 +683,15 @@
         let hasVotedToday = false;
         let totalVoters = parseInt(localStorage.getItem(STORAGE_KEY_TOTAL_VOTERS)) || 0;
 
+        // 【修复】使用北京时间（UTC+8）获取当天日期字符串
         function getTodayString() {
-            return new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+            const beijingTime = new Date(utc + 8 * 3600000);
+            const year = beijingTime.getFullYear();
+            const month = String(beijingTime.getMonth() + 1).padStart(2, '0');
+            const day = String(beijingTime.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function isVoteStarted() {
@@ -701,12 +708,12 @@
             if (userId) {
                 return userId;
             }
-            
+
             const fingerprint = generateBrowserFingerprint();
             localStorage.setItem('singer_vote_user_id', fingerprint);
             return fingerprint;
         }
-        
+
         function generateBrowserFingerprint() {
             const components = [
                 navigator.userAgent,
@@ -717,7 +724,7 @@
                 navigator.hardwareConcurrency || 'unknown',
                 navigator.maxTouchPoints || '0'
             ];
-            
+
             let hash = 0;
             const str = components.join('|');
             for (let i = 0; i < str.length; i++) {
@@ -725,7 +732,7 @@
                 hash = ((hash << 5) - hash) + char;
                 hash = hash & hash;
             }
-            
+
             return 'fingerprint_' + Math.abs(hash).toString(36);
         }
 
@@ -735,7 +742,7 @@
                 const lastVoteDate = localStorage.getItem(STORAGE_KEY_VOTED);
                 return lastVoteDate === getTodayString();
             }
-            
+
             try {
                 const userId = getUserIdentifier();
                 const snapshot = await db.ref('votedUsers/' + userId).once('value');
@@ -750,13 +757,13 @@
                 return lastVoteDate === getTodayString();
             }
         }
-        
+
         // 检查用户是否是首次投票
         async function isFirstTimeVoter() {
             if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) {
                 return !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
             }
-            
+
             try {
                 const userId = getUserIdentifier();
                 const snapshot = await db.ref('firstTimeVoters/' + userId).once('value');
@@ -823,7 +830,7 @@
             }
 
             hasVotedToday = await checkUserVotedToday();
-            
+
             if (hasVotedToday) {
                 document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
                 document.getElementById('voteStatus').style.color = '#c62828';
@@ -842,14 +849,14 @@
             const container = document.getElementById('contestants');
             container.innerHTML = '';
             const voteNotStarted = !isVoteStarted();
-            
+
             contestants.forEach(contestant => {
                 const card = document.createElement('div');
                 card.className = 'contestant-card';
                 card.dataset.id = contestant.id;
-                
+
                 if (hasVotedToday || voteNotStarted) card.classList.add('disabled');
-                
+
                 card.innerHTML = `
                     <div class="contestant-avatar">${contestant.id}</div>
                     <div class="contestant-name">${contestant.name}</div>
@@ -857,7 +864,7 @@
                     <div class="contestant-number">选手 ${contestant.id} 号</div>
                     <div class="contestant-video-btn" data-id="${contestant.id}">▶ 观看视频</div>
                 `;
-                
+
                 if (!hasVotedToday && !voteNotStarted) {
                     card.addEventListener('click', (e) => {
                         if (!e.target.classList.contains('contestant-video-btn')) {
@@ -865,7 +872,7 @@
                         }
                     });
                 }
-                
+
                 const videoBtn = card.querySelector('.contestant-video-btn');
                 const handleVideoClick = (e) => {
                     e.stopPropagation();
@@ -873,7 +880,7 @@
                 };
                 videoBtn.addEventListener('click', handleVideoClick);
                 videoBtn.addEventListener('touchstart', handleVideoClick);
-                
+
                 container.appendChild(card);
             });
         }
@@ -916,23 +923,23 @@
                 showMessage('error', '请先选择要投票的选手！');
                 return;
             }
-            
+
             const alreadyVoted = await checkUserVotedToday();
             if (alreadyVoted) {
                 showMessage('error', '您今日已投票，请明天再来！');
                 return;
             }
-            
+
             localStorage.setItem(STORAGE_KEY_VOTED, getTodayString());
             localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(selectedIds));
-            
+
             selectedIds.forEach(id => {
                 const contestant = contestants.find(c => c.id === id);
                 if (contestant) {
                     contestant.votes++;
                 }
             });
-            
+
             const isFirst = await isFirstTimeVoter();
             const hasCounted = localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
             if (!hasCounted && isFirst) {
@@ -940,26 +947,26 @@
                 totalVoters++;
                 localStorage.setItem(STORAGE_KEY_TOTAL_VOTERS, totalVoters.toString());
             }
-            
+
             saveVotesToStorage();
-            
+
             const increaseVoters = !hasCounted && isFirst;
             await saveVotesToCloud(selectedIds, increaseVoters);
-            
+
             hasVotedToday = true;
-            
+
             updateResults();
             updateStats();
             updateSelectedDisplay();
             highlightVotedContestants(selectedIds);
-            
+
             document.querySelectorAll('.contestant-card').forEach(card => {
                 card.classList.add('disabled');
             });
-            
+
             document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
             document.getElementById('voteStatus').style.color = '#c62828';
-            
+
             showMessage('success', '投票成功！感谢您的参与');
         }
 
@@ -967,16 +974,16 @@
             const sorted = [...contestants].sort((a, b) => b.votes - a.votes);
             const list = document.getElementById('resultsList');
             list.innerHTML = '';
-            
+
             sorted.forEach((contestant, index) => {
                 const item = document.createElement('div');
                 item.className = `result-item ${index < 3 ? 'top3' : ''}`;
-                
+
                 let rankClass = 'other';
                 if (index === 0) rankClass = 'gold';
                 else if (index === 1) rankClass = 'silver';
                 else if (index === 2) rankClass = 'bronze';
-                
+
                 item.innerHTML = `
                     <div class="result-info">
                         <div class="result-rank ${rankClass}">${index + 1}</div>
@@ -984,7 +991,7 @@
                     </div>
                     <div class="result-votes">${contestant.votes}票</div>
                 `;
-                
+
                 list.appendChild(item);
             });
         }
@@ -1000,28 +1007,28 @@
             msg.className = `message ${type}`;
             msg.textContent = message;
             document.body.appendChild(msg);
-            
+
             setTimeout(() => {
                 msg.remove();
             }, 3000);
         }
 
         function updateRemainingTime() {
-            const deadline = new Date('2026-05-17T18:00:00');
+            const deadline = new Date('2026-05-17T18:00:00+08:00');
             const now = new Date();
             const diff = deadline - now;
-            
+
             if (diff <= 0) {
                 document.getElementById('remainingTime').textContent = '⏰ 投票已结束';
                 return;
             }
-            
+
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('remainingTime').textContent = 
+
+            document.getElementById('remainingTime').textContent =
                 `⏰ 距离投票截止还剩：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
         }
 
