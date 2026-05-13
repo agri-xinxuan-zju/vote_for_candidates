@@ -392,13 +392,16 @@
             font-size: 0.8rem;
             color: #7bed9f;
             margin-top: 8px;
-            padding: 6px 12px;
+            padding: 8px 16px;
             background: rgba(123, 237, 159, 0.2);
             border-radius: 15px;
             display: inline-block;
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid rgba(123, 237, 159, 0.3);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            min-width: 80px;
         }
 
         .contestant-video-btn:hover {
@@ -406,9 +409,22 @@
             transform: scale(1.05);
         }
 
+        .contestant-video-btn:active {
+            transform: scale(0.95);
+            background: rgba(123, 237, 159, 0.5);
+        }
+
         .contestant-card.disabled .contestant-video-btn {
             opacity: 1;
             pointer-events: auto;
+        }
+
+        @media (max-width: 600px) {
+            .contestant-video-btn {
+                font-size: clamp(0.75rem, 3.5vw, 0.9rem);
+                padding: 10px 20px;
+                min-width: 100px;
+            }
         }
 
         .vote-btn {
@@ -723,10 +739,128 @@
     </div>
 
     <script>
-        const ENABLE_CLOUD_SYNC = false;  // 关闭云端同步，避免费用
+        const ENABLE_CLOUD_SYNC = true;  // 启用云端同步，确保数据共享
         let db = null;
         let firebaseInitialized = false;
         let currentContestant = null;
+
+        // 加载 Firebase SDK
+        if (ENABLE_CLOUD_SYNC) {
+            const script1 = document.createElement('script');
+            script1.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
+            script1.onload = loadFirebaseDatabase;
+            script1.onerror = () => {
+                console.error('Firebase SDK 加载失败');
+            };
+            document.head.appendChild(script1);
+        }
+
+        function loadFirebaseDatabase() {
+            const script2 = document.createElement('script');
+            script2.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
+            script2.onload = initFirebase;
+            script2.onerror = () => {
+                console.error('Firebase Database SDK 加载失败');
+            };
+            document.head.appendChild(script2);
+        }
+
+        function initFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDKwD96gPVTZKAEyD_yJXRWVggNMpTWVF8",
+                authDomain: "vote-for-candidates.firebaseapp.com",
+                databaseURL: "https://vote-for-candidates-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "vote-for-candidates",
+                storageBucket: "vote-for-candidates.firebasestorage.app",
+                messagingSenderId: "600898694792",
+                appId: "1:600898694792:web:ce385f05086bccc527b93d"
+            };
+            try {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                db = firebase.database();
+                firebaseInitialized = true;
+                console.log('Firebase 初始化成功');
+                updateSyncStatus(true, '云端连接成功');
+                loadVotesFromCloud();
+                setupFirebaseListeners();
+            } catch (error) {
+                console.error('Firebase 初始化失败:', error);
+                updateSyncStatus(false, '数据同步服务初始化失败');
+            }
+        }
+
+        function updateSyncStatus(isOnline, text) {
+            const statusEl = document.getElementById('syncStatus');
+            const iconEl = document.getElementById('syncIcon');
+            const textEl = document.getElementById('syncText');
+            if (!statusEl) return;
+            iconEl.textContent = isOnline ? '✅' : '⚠️';
+            textEl.textContent = text;
+        }
+
+        function setupFirebaseListeners() {
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
+            try {
+                db.ref('votes').on('value', (snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        contestants.forEach(c => {
+                            c.votes = data[c.id] || 0;
+                        });
+                        updateResults();
+                        updateStats();
+                    }
+                });
+                db.ref('totalVoters').on('value', (snapshot) => {
+                    if (snapshot.exists()) {
+                        totalVoters = snapshot.val();
+                        updateStats();
+                    }
+                });
+            } catch (error) {
+                console.error('设置监听器失败:', error);
+            }
+        }
+
+        async function loadVotesFromCloud() {
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
+            try {
+                const snapshot = await db.ref('votes').once('value');
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    contestants.forEach(c => {
+                        c.votes = data[c.id] || 0;
+                    });
+                }
+                const votersSnapshot = await db.ref('totalVoters').once('value');
+                totalVoters = votersSnapshot.exists() ? votersSnapshot.val() : 0;
+                updateResults();
+                updateStats();
+            } catch (error) {
+                console.error('加载云端数据失败:', error);
+            }
+        }
+
+        async function saveVotesToCloud(votedIds, increaseVoters) {
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
+            try {
+                for (const id of votedIds) {
+                    await db.ref('votes/' + id).transaction(currentVotes => {
+                        return (currentVotes || 0) + 1;
+                    });
+                }
+                if (increaseVoters) {
+                    await db.ref('totalVoters').transaction(currentVoters => {
+                        return (currentVoters || 0) + 1;
+                    });
+                }
+                console.log('投票保存到云端成功');
+            } catch (error) {
+                console.error('保存到云端失败:', error);
+            }
+        }
 
         const contestants = [
             // 示例：使用B站链接，你需要替换为实际上传后的B站视频链接
@@ -955,9 +1089,14 @@
                     });
                 }
                 
-                card.querySelector('.contestant-video-btn').addEventListener('click', () => {
+                const videoBtn = card.querySelector('.contestant-video-btn');
+                const handleVideoClick = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
                     openVideoModal(contestant);
-                });
+                };
+                videoBtn.addEventListener('click', handleVideoClick);
+                videoBtn.addEventListener('touchstart', handleVideoClick);
                 
                 container.appendChild(card);
             });
@@ -1023,6 +1162,10 @@
             
             // 保存到本地存储
             saveVotesToStorage();
+            
+            // 保存到云端
+            const increaseVoters = !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
+            saveVotesToCloud(selectedIds, increaseVoters);
             
             hasVotedToday = true;
             document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
