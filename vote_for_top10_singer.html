@@ -909,15 +909,44 @@
             }
         }
 
-        // 生成唯一用户标识
+        // 生成稳定的浏览器指纹标识
         function getUserIdentifier() {
+            // 优先从localStorage获取
             let userId = localStorage.getItem('singer_vote_user_id');
-            if (!userId) {
-                // 生成唯一标识
-                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('singer_vote_user_id', userId);
+            if (userId) {
+                return userId;
             }
-            return userId;
+            
+            // 生成浏览器指纹（基于浏览器特征，清空缓存后仍保持稳定）
+            const fingerprint = generateBrowserFingerprint();
+            
+            // 存储到localStorage方便后续使用
+            localStorage.setItem('singer_vote_user_id', fingerprint);
+            return fingerprint;
+        }
+        
+        // 生成浏览器指纹
+        function generateBrowserFingerprint() {
+            const components = [
+                navigator.userAgent,
+                navigator.language,
+                navigator.platform,
+                screen.width + 'x' + screen.height,
+                new Date().getTimezoneOffset(),
+                navigator.hardwareConcurrency || 'unknown',
+                navigator.maxTouchPoints || '0'
+            ];
+            
+            // 简单的哈希算法
+            let hash = 0;
+            const str = components.join('|');
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            
+            return 'fingerprint_' + Math.abs(hash).toString(36);
         }
 
         // 检查用户今天是否已在云端投票
