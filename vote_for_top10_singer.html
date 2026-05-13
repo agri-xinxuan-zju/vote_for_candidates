@@ -906,130 +906,20 @@
             }
         }
 
-        // 检测是否是微信浏览器
-        function isWeChatBrowser() {
-            const ua = navigator.userAgent.toLowerCase();
-            return ua.includes('micromessenger') && !ua.includes('wxwork');
-        }
-
-        // 打开视频弹窗
-        function openVideoModal(contestant) {
-            // 微信浏览器特殊处理：直接打开B站链接
-            if (isWeChatBrowser() && (contestant.video.includes('bilibili.com') || contestant.video.includes('b23.tv'))) {
-                // 处理B站短链接
-                let videoUrl = contestant.video;
-                if (videoUrl.includes('b23.tv')) {
-                    // b23.tv 短链接直接打开
-                    window.open(videoUrl, '_blank');
-                } else if (videoUrl.includes('bilibili.com/video/')) {
-                    // 转换为移动端适配链接
-                    const bvid = videoUrl.match(/BV[A-Za-z0-9]+/) || videoUrl.match(/av\d+/);
-                    if (bvid) {
-                        videoUrl = 'https://b23.tv/' + bvid[0];
-                    }
-                    window.open(videoUrl, '_blank');
-                } else {
-                    window.open(videoUrl, '_blank');
+        // 打开视频链接
+        function openVideoLink(contestant) {
+            // 处理B站链接，转换为移动端适配格式
+            let videoUrl = contestant.video;
+            if (videoUrl.includes('bilibili.com/video/')) {
+                // 转换为移动端适配的短链接
+                const bvid = videoUrl.match(/BV[A-Za-z0-9]+/) || videoUrl.match(/av\d+/);
+                if (bvid) {
+                    videoUrl = 'https://b23.tv/' + bvid[0];
                 }
-                return;
             }
-            
-            // 非微信浏览器：使用弹窗播放
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('player');
-            const source = document.getElementById('videoSource');
-            const webmSource = document.getElementById('videoSourceWebm');
-            const bilibiliFrame = document.getElementById('bilibiliFrame');
-            const loading = document.getElementById('videoLoading');
-            const error = document.getElementById('videoError');
-            
-            // 保存当前选手信息用于重试
-            currentContestant = contestant;
-            
-            // 重置所有状态
-            loading.style.display = 'none';
-            error.style.display = 'none';
-            player.style.display = 'none';
-            bilibiliFrame.style.display = 'none';
-            
-            // 设置选手信息
-            document.getElementById('videoContestantName').textContent = contestant.name;
-            document.getElementById('videoSongName').textContent = contestant.song;
-            
-            // 判断视频类型
-            if (contestant.video.includes('bilibili.com') || contestant.video.includes('b23.tv')) {
-                // B站视频：转换为嵌入链接
-                let embedUrl = contestant.video;
-                
-                // 处理不同格式的B站链接
-                if (embedUrl.includes('b23.tv')) {
-                    // 短链接转换为播放器链接
-                    embedUrl = embedUrl.replace('b23.tv/', 'player.bilibili.com/player.html?bvid=');
-                } else if (embedUrl.includes('bilibili.com/video/')) {
-                    // 普通视频链接转换为播放器链接
-                    const bvid = embedUrl.match(/BV[A-Za-z0-9]+/) || embedUrl.match(/av\d+/);
-                    if (bvid) {
-                        embedUrl = 'https://player.bilibili.com/player.html?bvid=' + bvid[0];
-                    }
-                }
-                
-                // 设置iframe源
-                bilibiliFrame.src = embedUrl;
-                bilibiliFrame.style.display = 'block';
-            } else {
-                // 普通视频
-                loading.style.display = 'flex';
-                
-                // 设置视频源（添加时间戳避免缓存）
-                const timestamp = new Date().getTime();
-                source.src = contestant.video + '?t=' + timestamp;
-                if (webmSource) {
-                    webmSource.src = contestant.video.replace('.mp4', '.webm') + '?t=' + timestamp;
-                }
-                player.load();
-            }
-            
-            // 显示弹窗
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            // 直接跳转
+            window.location.href = videoUrl;
         }
-
-        function closeVideoModal() {
-            const modal = document.getElementById('videoModal');
-            const player = document.getElementById('player');
-            const bilibiliFrame = document.getElementById('bilibiliFrame');
-            
-            player.pause();
-            bilibiliFrame.src = ''; // 清空iframe避免继续播放
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        }
-
-        function retryVideo() {
-            if (currentContestant) {
-                openVideoModal(currentContestant);
-            }
-        }
-
-        // 普通视频加载成功
-        document.getElementById('player').addEventListener('loadeddata', function() {
-            document.getElementById('videoLoading').style.display = 'none';
-            document.getElementById('videoError').style.display = 'none';
-            this.style.display = 'block';
-        });
-
-        // 普通视频加载失败
-        document.getElementById('player').addEventListener('error', function() {
-            document.getElementById('videoLoading').style.display = 'none';
-            document.getElementById('videoError').style.display = 'flex';
-            this.style.display = 'none';
-            console.error('视频加载失败:', this.error);
-        });
-
-        // B站iframe加载完成
-        document.getElementById('bilibiliFrame').addEventListener('load', function() {
-            document.getElementById('videoLoading').style.display = 'none';
-        });
 
         function loadVotesFromStorage() {
             try {
@@ -1120,8 +1010,7 @@
                 const videoBtn = card.querySelector('.contestant-video-btn');
                 const handleVideoClick = (e) => {
                     e.stopPropagation();
-                    e.preventDefault();
-                    openVideoModal(contestant);
+                    openVideoLink(contestant);
                 };
                 videoBtn.addEventListener('click', handleVideoClick);
                 videoBtn.addEventListener('touchstart', handleVideoClick);
