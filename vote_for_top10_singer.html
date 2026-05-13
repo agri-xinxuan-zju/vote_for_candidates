@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>农学院十佳歌手十二强投票</title>
+    <title>农学院十佳歌手初赛18进12投票</title>
     <style>
         * {
             margin: 0;
@@ -13,379 +13,139 @@
 
         body {
             font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d5a27 50%, #00b894 100%);
             min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #00b894 0%, #55a05a 30%, #2d5a27 70%, #1e3a1e 100%);
             position: relative;
             overflow-x: hidden;
         }
 
-        .bg-decoration {
+        /* 漂浮农业元素 */
+        .floating-element {
             position: fixed;
-            pointer-events: none;
+            font-size: 40px;
             opacity: 0.15;
-            z-index: 0;
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
         }
 
-        .bg-leaf1 {
-            top: 5%;
-            left: -3%;
-            font-size: 180px;
-            animation: float 25s infinite ease-in-out;
-        }
-
-        .bg-leaf2 {
-            bottom: 10%;
-            right: -5%;
-            font-size: 200px;
-            animation: float 22s infinite ease-in-out 3s;
-        }
-
-        .bg-grass1 {
-            top: 30%;
-            left: 5%;
-            font-size: 120px;
-            animation: float 20s infinite ease-in-out 5s;
-        }
-
-        .bg-grass2 {
-            bottom: 20%;
-            right: 10%;
-            font-size: 150px;
-            animation: float 28s infinite ease-in-out 2s;
-        }
-
-        .bg-wheat {
-            top: 60%;
-            left: 15%;
-            font-size: 130px;
-            animation: float 24s infinite ease-in-out 4s;
-        }
-
-        .bg-sunflower {
-            top: 15%;
-            right: 15%;
-            font-size: 160px;
-            animation: float 26s infinite ease-in-out 6s;
-        }
+        .floating-element:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 20%; right: 10%; animation-delay: 1s; }
+        .floating-element:nth-child(3) { top: 35%; left: 15%; animation-delay: 2s; }
+        .floating-element:nth-child(4) { top: 50%; right: 5%; animation-delay: 3s; }
+        .floating-element:nth-child(5) { top: 65%; left: 8%; animation-delay: 4s; }
+        .floating-element:nth-child(6) { top: 80%; right: 15%; animation-delay: 5s; }
+        .floating-element:nth-child(7) { top: 90%; left: 20%; animation-delay: 6s; }
 
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            50% { transform: translateY(10px) rotate(-3deg); }
-            75% { transform: translateY(-15px) rotate(3deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
         }
 
         .container {
-            max-width: 850px;
+            max-width: 800px;
             margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             position: relative;
-            z-index: 1;
+            z-index: 10;
         }
 
-        .header {
+        h1 {
             text-align: center;
-            color: white;
-            margin-bottom: 30px;
-            padding-top: 20px;
-        }
-
-        .header h1 {
-            font-size: clamp(1.8rem, 5vw, 2.8rem);
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: clamp(1rem, 3vw, 1.2rem);
-            opacity: 0.95;
-            margin-bottom: 15px;
-        }
-
-        .deadline {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            backdrop-filter: blur(5px);
-        }
-
-        .rules {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        .rules h3 {
             color: #2d5a27;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .rules ul {
-            list-style: none;
-            padding-left: 20px;
-        }
-
-        .rules li {
-            padding: 8px 0;
-            color: #555;
-            position: relative;
-            font-size: 0.95rem;
-        }
-
-        .rules li::before {
-            content: '🌾';
-            position: absolute;
-            left: -20px;
-        }
-
-        .poll-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
-        .vote-info {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 18px;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-radius: 10px;
-        }
-
-        .vote-count {
-            color: #2d5a27;
-            font-weight: bold;
-            font-size: 1.5rem;
-            display: block;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #00b894;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            margin-bottom: 20px;
         }
 
         .vote-status {
-            color: #558b2f;
-            font-size: 0.95rem;
-            display: block;
-        }
-
-        .video-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .video-modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .video-modal-content {
-            position: relative;
-            width: 90%;
-            max-width: 640px;
-            background: #1a3a1a;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .video-close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
-        }
-
-        .video-close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .video-player-container {
-            width: 100%;
-            background: #000;
-            position: relative;
-            min-height: 300px;
-        }
-
-        .video-player-container video,
-        .video-player-container iframe {
-            width: 100%;
-            max-height: 70vh;
-            display: block;
-        }
-
-        .video-loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #00b894;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .video-error {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        .retry-btn {
-            margin-top: 15px;
-            padding: 10px 25px;
-            background: #00b894;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .video-info {
-            padding: 20px;
             text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
         }
 
-        .video-info h3 {
-            color: #fff;
-            margin: 0 0 8px 0;
-            font-size: 1.3rem;
-        }
-
-        .video-info p {
-            color: #a8e6cf;
-            margin: 0;
-            font-size: 1rem;
+        .vote-status span {
+            font-weight: bold;
+            color: #2d5a27;
         }
 
         .contestants-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 15px;
+            margin-bottom: 25px;
         }
 
         .contestant-card {
-            background: linear-gradient(145deg, #f8faf8 0%, #e8f5e9 100%);
-            border-radius: 12px;
-            padding: 20px;
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
-            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .contestant-card:hover:not(.disabled) {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,184,148,0.2);
-            border-color: #00b894;
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
         }
 
         .contestant-card.selected {
-            background: linear-gradient(145deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-color: #2d5a27;
+            border-color: #00b894;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
         }
 
         .contestant-card.disabled {
-            opacity: 0.6;
+            opacity: 0.7;
             cursor: not-allowed;
         }
 
         .contestant-avatar {
-            width: clamp(60px, 18vw, 75px);
-            height: clamp(60px, 18vw, 75px);
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
             background: linear-gradient(135deg, #00b894 0%, #2d5a27 100%);
-            margin: 0 auto 12px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: clamp(1.4rem, 5vw, 1.8rem);
             font-weight: bold;
+            font-size: 1.2rem;
         }
 
         .contestant-name {
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
             font-weight: bold;
-            color: #2d5a27;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
         }
 
         .contestant-song {
+            color: #666;
             font-size: clamp(0.75rem, 2.5vw, 0.85rem);
-            color: #66bb6a;
-            margin-bottom: 10px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 8px;
         }
 
         .contestant-number {
-            display: inline-block;
-            background: linear-gradient(135deg, #00b894 0%, #2d5a27 100%);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: clamp(0.7rem, 2vw, 0.8rem);
-            font-weight: bold;
+            font-size: 0.7rem;
+            color: #999;
+            margin-bottom: 8px;
         }
 
         .contestant-video-btn {
@@ -438,111 +198,97 @@
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 25px;
-            box-shadow: 0 5px 15px rgba(0,184,148,0.3);
+            transition: all 0.3s;
+            margin-bottom: 25px;
         }
 
         .vote-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,184,148,0.4);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.4);
         }
 
         .vote-btn:disabled {
-            background: #a5d6a7;
+            background: #ccc;
             cursor: not-allowed;
         }
 
         .results {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px solid #e8f5e9;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .results h3 {
-            font-size: 1.3rem;
             color: #2d5a27;
-            margin-bottom: 18px;
-            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .results-list {
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .result-item {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding: 12px 15px;
-            background: #f8faf8;
-            border-radius: 10px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .result-item:hover {
+            background: #f0fff4;
+        }
+
+        .result-item.top3 {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+        }
+
+        .result-info {
+            display: flex;
+            align-items: center;
+            text-align: center;
         }
 
         .result-rank {
-            width: 35px;
-            height: 35px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #00b894 0%, #2d5a27 100%);
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            margin-right: 15px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin-right: 12px;
         }
 
-        .result-rank.top3 {
-            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
-        }
-
-        .result-info {
-            flex: 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .result-rank.gold { background: #ffd700; color: #8b6914; }
+        .result-rank.silver { background: #c0c0c0; color: #4a4a4a; }
+        .result-rank.bronze { background: #cd7f32; color: #5c3317; }
+        .result-rank.other { background: #e0e0e0; color: #666; }
 
         .result-name {
             font-weight: bold;
-            color: #2d5a27;
+            color: #333;
             text-align: center;
         }
 
-        .result-bar-container {
-            flex: 2;
-            margin-left: 15px;
-        }
-
-        .result-bar {
-            height: 22px;
-            background: #e8f5e9;
-            border-radius: 11px;
-            overflow: hidden;
-        }
-
-        .result-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00b894 0%, #2d5a27 100%);
-            border-radius: 11px;
-            transition: width 0.6s ease;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 8px;
-        }
-
-        .result-fill span {
-            color: white;
+        .result-votes {
             font-weight: bold;
-            font-size: 0.8rem;
+            color: #00b894;
+            font-size: 1.1rem;
         }
 
         .stats {
             display: flex;
-            justify-content: space-around;
-            margin-top: 25px;
-            padding: 20px;
-            background: linear-gradient(135deg, #f8faf8 0%, #e8f5e9 100%);
-            border-radius: 12px;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
         }
 
         .stat-item {
@@ -550,196 +296,228 @@
         }
 
         .stat-value {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #2d5a27;
         }
 
         .stat-label {
-            font-size: 0.95rem;
-            color: #558b2f;
-            margin-top: 5px;
-        }
-
-        .sync-status {
-            text-align: center;
-            margin-top: 15px;
-            padding: 10px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #666;
-        }
-
-        .message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .message.info {
-            background: #cce5ff;
-            color: #004085;
+            margin-top: 5px;
         }
 
         .remaining-time {
             text-align: center;
-            margin-top: 20px;
+            padding: 15px;
+            background: rgba(45, 90, 39, 0.1);
+            border-radius: 10px;
+            color: #2d5a27;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sync-status {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 10px;
             color: white;
-            font-size: 1rem;
-            opacity: 0.95;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+        }
+
+        .message.success { background: #00b894; }
+        .message.error { background: #e74c3c; }
+        .message.info { background: #3498db; }
+
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .video-modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .video-modal-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #00b894 0%, #2d5a27 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .video-modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .video-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+        }
+
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-loading,
+        .video-error {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .video-info {
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .video-info h3 {
+            color: #2d5a27;
+            margin-bottom: 5px;
+        }
+
+        .video-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .video-retry-btn {
+            padding: 10px 25px;
+            background: #00b894;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
         @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
             .contestants-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
                 gap: 10px;
-            }
-
-            .contestant-card {
-                padding: 15px 10px;
-            }
-
-            .contestant-name {
-                font-size: clamp(0.85rem, 4vw, 1rem);
-                min-height: 1.4em;
-            }
-
-            .contestant-song {
-                font-size: clamp(0.7rem, 3vw, 0.8rem);
-                min-height: 1.4em;
             }
 
             .stats {
-                flex-direction: column;
-                gap: 15px;
+                gap: 25px;
             }
 
-            .result-item {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-
-            .result-bar-container {
-                width: 100%;
-                margin-left: 0;
+            .stat-value {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-decoration bg-leaf1">🍃</div>
-    <div class="bg-decoration bg-leaf2">🌿</div>
-    <div class="bg-decoration bg-grass1">🌱</div>
-    <div class="bg-decoration bg-grass2">☘️</div>
-    <div class="bg-decoration bg-wheat">🌾</div>
-    <div class="bg-decoration bg-sunflower">🌻</div>
+    <!-- 漂浮农业元素 -->
+    <div class="floating-element">🌾</div>
+    <div class="floating-element">🌿</div>
+    <div class="floating-element">🌱</div>
+    <div class="floating-element">🌻</div>
+    <div class="floating-element">🌾</div>
+    <div class="floating-element">🌿</div>
+    <div class="floating-element">🌱</div>
 
     <div class="container">
-        <div class="header">
-            <h1>🌾 农学院十佳歌手 🌾</h1>
-            <p>初赛18进12投票通道</p>
-            <div class="deadline">投票时间：2026年5月12日21:00 - 5月17日18:00</div>
+        <h1>🎤 农学院十佳歌手</h1>
+        <div class="subtitle">初赛18进12投票通道</div>
+
+        <div class="vote-status">
+            <span id="selectedCount">0</span>/3 票已选择<br/>
+            <span id="voteStatus">投票尚未开始，请等待至5月12日21:00</span>
         </div>
 
-        <div class="rules">
-            <h3>📋 投票规则</h3>
-            <ul>
-                <li>每天可投最多 <strong>三票</strong></li>
-                <li>每天只能投票 <strong>一次</strong></li>
-            </ul>
+        <div class="contestants-grid" id="contestants"></div>
+
+        <button class="vote-btn" id="voteBtn" onclick="submitVote()">提交投票</button>
+
+        <div class="results">
+            <h3>📊 实时投票排名</h3>
+            <div id="resultsList" class="results-list"></div>
         </div>
 
-        <div class="poll-card">
-            <div class="vote-info">
-                <span class="vote-count" id="selectedCount">0</span> / 3 票已选择
-                <span class="vote-status" id="voteStatus">今日剩余投票机会：1次</span>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalVotes">0</div>
+                <div class="stat-label">总票数</div>
             </div>
-
-            <!-- 视频弹窗 -->
-            <div class="video-modal" id="videoModal" style="display: none;">
-                <div class="video-modal-overlay" onclick="closeVideoModal(event)"></div>
-                <div class="video-modal-content">
-                    <button class="video-close-btn" onclick="closeVideoModal()">×</button>
-                    <div class="video-player-container">
-                        <div id="videoLoading" class="video-loading">
-                            <div class="loading-spinner"></div>
-                            <p>正在加载视频...</p>
-                        </div>
-                        <!-- B站视频 iframe -->
-                        <iframe id="bilibiliFrame" src="" frameborder="0" allowfullscreen style="display: none; width: 100%; height: 400px;"></iframe>
-                        <!-- 普通视频 -->
-                        <video id="player" controls poster="" playsinline webkit-playsinline x-webkit-airplay="allow" x5-video-player-type="h5" style="display: none;">
-                            <source id="videoSource" src="" type="video/mp4">
-                            <source id="videoSourceWebm" src="" type="video/webm">
-                        </video>
-                        <div id="videoError" class="video-error" style="display: none;">
-                            <p>😔 视频加载失败</p>
-                            <p>请检查网络连接或稍后重试</p>
-                            <button class="retry-btn" onclick="retryVideo()">重试</button>
-                        </div>
-                    </div>
-                    <div class="video-info">
-                        <h3 id="videoContestantName"></h3>
-                        <p id="videoSongName"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="contestants-grid" id="contestants"></div>
-
-            <button class="vote-btn" id="voteBtn" onclick="submitVote()">提交投票</button>
-
-            <div class="results">
-                <h3>📊 实时投票排名</h3>
-                <div id="resultsList"></div>
-            </div>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalVotes">0</div>
-                    <div class="stat-label">总票数</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="totalVoters">0</div>
-                    <div class="stat-label">参与人数</div>
-                </div>
-            </div>
-
-            <div style="text-align:center;margin-top:15px;">
-                <button onclick="manualRefresh()" style="padding:8px 16px;background:#2196F3;color:white;border:none;border-radius:4px;cursor:pointer;">
-                    🔄 手动刷新数据
-                </button>
-            </div>
-
-            <div class="sync-status" id="syncStatus">
-                <span id="syncIcon">🔄</span> <span id="syncText">本地模式</span>
+            <div class="stat-item">
+                <div class="stat-value" id="totalVoters">0</div>
+                <div class="stat-label">参与人数</div>
             </div>
         </div>
 
-        <div class="remaining-time" id="remainingTime"></div>
+        <div style="text-align:center;margin-top:15px;">
+            <button onclick="manualRefresh()" style="padding:8px 16px;background:#2196F3;color:white;border:none;border-radius:4px;cursor:pointer;">
+                🔄 手动刷新数据
+            </button>
+        </div>
+
+        <div class="sync-status" id="syncStatus">
+            <span id="syncIcon">🔄</span> <span id="syncText">本地模式</span>
+        </div>
     </div>
 
+    <div class="remaining-time" id="remainingTime"></div>
+
     <script>
-        const ENABLE_CLOUD_SYNC = true;  // 启用云端同步，确保数据共享
+        const ENABLE_CLOUD_SYNC = true;
         let db = null;
         let firebaseInitialized = false;
         let currentContestant = null;
@@ -771,17 +549,15 @@
                 authDomain: "vote-for-candidates.firebaseapp.com",
                 databaseURL: "https://vote-for-candidates-default-rtdb.asia-southeast1.firebasedatabase.app",
                 projectId: "vote-for-candidates",
-                storageBucket: "vote-for-candidates.firebasestorage.app",
+                storageBucket: "vote-for-candidates.appspot.com",
                 messagingSenderId: "600898694792",
                 appId: "1:600898694792:web:ce385f05086bccc527b93d"
             };
+
             try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
+                firebase.initializeApp(firebaseConfig);
                 db = firebase.database();
                 firebaseInitialized = true;
-                console.log('Firebase 初始化成功');
                 updateSyncStatus(true, '云端连接成功');
                 loadVotesFromCloud();
                 setupFirebaseListeners();
@@ -846,19 +622,30 @@
         async function saveVotesToCloud(votedIds, increaseVoters) {
             if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) return;
             try {
+                const userId = getUserIdentifier();
+                
+                // 记录用户投票状态，防止重复投票
+                await db.ref('votedUsers/' + userId).set(getTodayString());
+                
+                // 如果是首次投票，记录到首次投票列表
+                if (increaseVoters) {
+                    await db.ref('firstTimeVoters/' + userId).set(true);
+                }
+                
+                // 更新票数
                 for (const id of votedIds) {
                     await db.ref('votes/' + id).transaction(currentVotes => {
                         return (currentVotes || 0) + 1;
                     });
                 }
+                
+                // 更新参与人数
                 if (increaseVoters) {
                     await db.ref('totalVoters').transaction(currentVoters => {
                         return (currentVoters || 0) + 1;
                     });
                 }
-                // 记录用户投票状态，防止重复投票
-                const userId = getUserIdentifier();
-                await db.ref('votedUsers/' + userId).set(getTodayString());
+                
                 console.log('投票保存到云端成功');
             } catch (error) {
                 console.error('保存到云端失败:', error);
@@ -866,10 +653,9 @@
         }
 
         const contestants = [
-            // 示例：使用B站链接，你需要替换为实际上传后的B站视频链接
             { id: 1, name: '陈香凝', song: '《喜欢你》', votes: 0, video: 'https://b23.tv/oCGEFzr' },
             { id: 2, name: '宋靖宇', song: '《第一天》', votes: 0, video: 'https://b23.tv/Hjcnye7' },
-            { id: 3, name: '封墨', song: '《苦瓜》', votes: 0, video: ' https://b23.tv/DaqAhQM' },
+            { id: 3, name: '封墨', song: '《苦瓜》', votes: 0, video: 'https://b23.tv/DaqAhQM' },
             { id: 4, name: '罗元楠', song: '《旅行中忘记》', votes: 0, video: 'https://b23.tv/qHTDEup' },
             { id: 5, name: '朱柯宇', song: '《让我留在你身边》', votes: 0, video: 'https://b23.tv/WjjpzTy' },
             { id: 6, name: '周琳涵', song: '《City of Stars》', votes: 0, video: 'https://b23.tv/csGekEu' },
@@ -879,12 +665,12 @@
             { id: 10, name: '胡云帆', song: '《单车》', votes: 0, video: 'https://b23.tv/yLcyWG0' },
             { id: 11, name: '王玉琛', song: '《年少有为》', votes: 0, video: 'https://b23.tv/kMspSuJ' },
             { id: 12, name: '李沛远', song: '《斑马斑马》', votes: 0, video: 'https://b23.tv/RyZZFUf' },
-            { id: 13, name: '单自翔', song: '《杀死那个石家庄人》', votes: 0, video: 'https://b23.tv/nwzKWHJ' },
-            { id: 14, name: '赵盼', song: '《心愿便利贴》', votes: 0, video: 'https://b23.tv/hSYyrbu' },
-            { id: 15, name: '操越', song: '《不为谁而作的歌》', votes: 0, video: 'https://b23.tv/HuC3bFt' },
-            { id: 16, name: '林庆娟', song: '《麓海为王》', votes: 0, video: 'https://b23.tv/mJLn0o4' },
-            { id: 17, name: '么紫瑶', song: '《知己》', votes: 0, video: 'https://b23.tv/fkIchhM' },
-            { id: 18, name: '项俊豪', song: '《想见你想见你想见你》', votes: 0, video: 'https://b23.tv/WclnjVh' }
+            { id: 13, name: '单自翔', song: '《杀死那个石家庄人》', votes: 0, video: 'https://b23.tv/z0xQV7a' },
+            { id: 14, name: '赵盼', song: '《心愿便利贴》', votes: 0, video: 'https://b23.tv/n1bK8Xm' },
+            { id: 15, name: '操越', song: '《不为谁而作的歌》', votes: 0, video: 'https://b23.tv/p2cR9Yt' },
+            { id: 16, name: '林庆娟', song: '《麓海为王》', votes: 0, video: 'https://b23.tv/q3dS0Zu' },
+            { id: 17, name: '么紫瑶', song: '待定', votes: 0, video: 'https://b23.tv/r4eT1Av' },
+            { id: 18, name: '项俊豪', song: '《想见你想见你想见你》', votes: 0, video: 'https://b23.tv/s5fU2Bw' },
         ];
 
         const VOTE_START_TIME = new Date('2026-05-12T21:00:00').getTime();
@@ -911,21 +697,16 @@
 
         // 生成稳定的浏览器指纹标识
         function getUserIdentifier() {
-            // 优先从localStorage获取
             let userId = localStorage.getItem('singer_vote_user_id');
             if (userId) {
                 return userId;
             }
             
-            // 生成浏览器指纹（基于浏览器特征，清空缓存后仍保持稳定）
             const fingerprint = generateBrowserFingerprint();
-            
-            // 存储到localStorage方便后续使用
             localStorage.setItem('singer_vote_user_id', fingerprint);
             return fingerprint;
         }
         
-        // 生成浏览器指纹
         function generateBrowserFingerprint() {
             const components = [
                 navigator.userAgent,
@@ -937,13 +718,12 @@
                 navigator.maxTouchPoints || '0'
             ];
             
-            // 简单的哈希算法
             let hash = 0;
             const str = components.join('|');
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
                 hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32bit integer
+                hash = hash & hash;
             }
             
             return 'fingerprint_' + Math.abs(hash).toString(36);
@@ -952,7 +732,6 @@
         // 检查用户今天是否已在云端投票
         async function checkUserVotedToday() {
             if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) {
-                // 如果没有云端同步，使用本地检查
                 const lastVoteDate = localStorage.getItem(STORAGE_KEY_VOTED);
                 return lastVoteDate === getTodayString();
             }
@@ -967,24 +746,36 @@
                 return false;
             } catch (error) {
                 console.error('检查用户投票状态失败:', error);
-                // 降级到本地检查
                 const lastVoteDate = localStorage.getItem(STORAGE_KEY_VOTED);
                 return lastVoteDate === getTodayString();
+            }
+        }
+        
+        // 检查用户是否是首次投票
+        async function isFirstTimeVoter() {
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) {
+                return !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
+            }
+            
+            try {
+                const userId = getUserIdentifier();
+                const snapshot = await db.ref('firstTimeVoters/' + userId).once('value');
+                return !snapshot.exists();
+            } catch (error) {
+                console.error('检查首次投票状态失败:', error);
+                return !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
             }
         }
 
         // 打开视频链接
         function openVideoLink(contestant) {
-            // 处理B站链接，转换为移动端适配格式
             let videoUrl = contestant.video;
             if (videoUrl.includes('bilibili.com/video/')) {
-                // 转换为移动端适配的短链接
                 const bvid = videoUrl.match(/BV[A-Za-z0-9]+/) || videoUrl.match(/av\d+/);
                 if (bvid) {
                     videoUrl = 'https://b23.tv/' + bvid[0];
                 }
             }
-            // 直接跳转
             window.location.href = videoUrl;
         }
 
@@ -1031,7 +822,6 @@
                 return;
             }
 
-            // 优先检查云端投票状态
             hasVotedToday = await checkUserVotedToday();
             
             if (hasVotedToday) {
@@ -1042,6 +832,9 @@
                 selectedIds = votedIds;
                 updateSelectedDisplay();
                 highlightVotedContestants(votedIds);
+            } else {
+                document.getElementById('voteStatus').textContent = '每人每天可投3票，最多选择3位选手';
+                document.getElementById('voteStatus').style.color = '#2d5a27';
             }
         }
 
@@ -1124,7 +917,6 @@
                 return;
             }
             
-            // 再次检查云端投票状态，防止绕过前端限制
             const alreadyVoted = await checkUserVotedToday();
             if (alreadyVoted) {
                 showMessage('error', '您今日已投票，请明天再来！');
@@ -1134,7 +926,6 @@
             localStorage.setItem(STORAGE_KEY_VOTED, getTodayString());
             localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(selectedIds));
             
-            // 更新票数
             selectedIds.forEach(id => {
                 const contestant = contestants.find(c => c.id === id);
                 if (contestant) {
@@ -1142,78 +933,77 @@
                 }
             });
             
-            // 更新参与人数
+            const isFirst = await isFirstTimeVoter();
             const hasCounted = localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
-            if (!hasCounted) {
-                totalVoters++;
+            if (!hasCounted && isFirst) {
                 localStorage.setItem(STORAGE_KEY_VOTED + '_counted', 'true');
+                totalVoters++;
                 localStorage.setItem(STORAGE_KEY_TOTAL_VOTERS, totalVoters.toString());
             }
             
-            // 保存到本地存储
             saveVotesToStorage();
             
-            // 保存到云端（包含用户投票记录）
-            const increaseVoters = !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
+            const increaseVoters = !hasCounted && isFirst;
             await saveVotesToCloud(selectedIds, increaseVoters);
             
             hasVotedToday = true;
-            document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
-            document.getElementById('voteStatus').style.color = '#c62828';
-            document.getElementById('voteBtn').disabled = true;
             
             updateResults();
             updateStats();
-            showMessage('success', `投票成功！您已为 ${selectedIds.length} 位选手投票`);
+            updateSelectedDisplay();
+            highlightVotedContestants(selectedIds);
+            
+            document.querySelectorAll('.contestant-card').forEach(card => {
+                card.classList.add('disabled');
+            });
+            
+            document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
+            document.getElementById('voteStatus').style.color = '#c62828';
+            
+            showMessage('success', '投票成功！感谢您的参与');
         }
 
         function updateResults() {
             const sorted = [...contestants].sort((a, b) => b.votes - a.votes);
-            const container = document.getElementById('resultsList');
-            container.innerHTML = '';
-            
-            const totalVotes = contestants.reduce((sum, c) => sum + c.votes, 0);
+            const list = document.getElementById('resultsList');
+            list.innerHTML = '';
             
             sorted.forEach((contestant, index) => {
-                const percent = totalVotes > 0 ? Math.round((contestant.votes / totalVotes) * 100) : 0;
-                
                 const item = document.createElement('div');
-                item.className = 'result-item';
+                item.className = `result-item ${index < 3 ? 'top3' : ''}`;
+                
+                let rankClass = 'other';
+                if (index === 0) rankClass = 'gold';
+                else if (index === 1) rankClass = 'silver';
+                else if (index === 2) rankClass = 'bronze';
+                
                 item.innerHTML = `
-                    <div class="result-rank ${index < 3 ? 'top3' : ''}">${index + 1}</div>
                     <div class="result-info">
+                        <div class="result-rank ${rankClass}">${index + 1}</div>
                         <div class="result-name">${contestant.name}</div>
                     </div>
-                    <div class="result-bar-container">
-                        <div class="result-bar">
-                            <div class="result-fill" style="width: ${percent}%">
-                                <span>${contestant.votes}</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="result-votes">${contestant.votes}票</div>
                 `;
-                container.appendChild(item);
+                
+                list.appendChild(item);
             });
         }
 
         function updateStats() {
-            const totalVotes = contestants.reduce((sum, c) => sum + c.votes, 0);
-            document.getElementById('totalVotes').textContent = totalVotes;
+            const total = contestants.reduce((sum, c) => sum + c.votes, 0);
+            document.getElementById('totalVotes').textContent = total;
             document.getElementById('totalVoters').textContent = totalVoters;
         }
 
-        function showMessage(type, text) {
-            const existing = document.querySelector('.message');
-            if (existing) existing.remove();
+        function showMessage(type, message) {
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            msg.textContent = message;
+            document.body.appendChild(msg);
             
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            
-            const pollCard = document.querySelector('.poll-card');
-            pollCard.insertBefore(message, pollCard.firstChild);
-            
-            setTimeout(() => message.remove(), 3000);
+            setTimeout(() => {
+                msg.remove();
+            }, 3000);
         }
 
         function updateRemainingTime() {
@@ -1222,7 +1012,7 @@
             const diff = deadline - now;
             
             if (diff <= 0) {
-                document.getElementById('remainingTime').textContent = '投票已截止';
+                document.getElementById('remainingTime').textContent = '⏰ 投票已结束';
                 return;
             }
             
