@@ -856,6 +856,9 @@
                         return (currentVoters || 0) + 1;
                     });
                 }
+                // 记录用户投票状态，防止重复投票
+                const userId = getUserIdentifier();
+                await db.ref('votedUsers/' + userId).set(getTodayString());
                 console.log('投票保存到云端成功');
             } catch (error) {
                 console.error('保存到云端失败:', error);
@@ -906,6 +909,41 @@
             }
         }
 
+        // 生成唯一用户标识
+        function getUserIdentifier() {
+            let userId = localStorage.getItem('singer_vote_user_id');
+            if (!userId) {
+                // 生成唯一标识
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('singer_vote_user_id', userId);
+            }
+            return userId;
+        }
+
+        // 检查用户今天是否已在云端投票
+        async function checkUserVotedToday() {
+            if (!ENABLE_CLOUD_SYNC || !db || !firebaseInitialized) {
+                // 如果没有云端同步，使用本地检查
+                const lastVoteDate = localStorage.getItem(STORAGE_KEY_VOTED);
+                return lastVoteDate === getTodayString();
+            }
+            
+            try {
+                const userId = getUserIdentifier();
+                const snapshot = await db.ref('votedUsers/' + userId).once('value');
+                if (snapshot.exists()) {
+                    const lastVoteDate = snapshot.val();
+                    return lastVoteDate === getTodayString();
+                }
+                return false;
+            } catch (error) {
+                console.error('检查用户投票状态失败:', error);
+                // 降级到本地检查
+                const lastVoteDate = localStorage.getItem(STORAGE_KEY_VOTED);
+                return lastVoteDate === getTodayString();
+            }
+        }
+
         // 打开视频链接
         function openVideoLink(contestant) {
             // 处理B站链接，转换为移动端适配格式
@@ -953,7 +991,7 @@
             updateStats();
         }
 
-        function checkVoteStatus() {
+        async function checkVoteStatus() {
             if (!isVoteStarted()) {
                 document.getElementById('voteStatus').textContent = '投票尚未开始，请等待至5月12日21:00';
                 document.getElementById('voteStatus').style.color = '#ff9800';
@@ -964,11 +1002,10 @@
                 return;
             }
 
-            const lastVoteDate = localStorage.getItem(STORAGE_KEY_VOTED);
-            const today = getTodayString();
+            // 优先检查云端投票状态
+            hasVotedToday = await checkUserVotedToday();
             
-            if (lastVoteDate === today) {
-                hasVotedToday = true;
+            if (hasVotedToday) {
                 document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
                 document.getElementById('voteStatus').style.color = '#c62828';
                 document.getElementById('voteBtn').disabled = true;
@@ -1052,9 +1089,16 @@
             });
         }
 
-        function submitVote() {
+        async function submitVote() {
             if (selectedIds.length === 0) {
                 showMessage('error', '请先选择要投票的选手！');
+                return;
+            }
+            
+            // 再次检查云端投票状态，防止绕过前端限制
+            const alreadyVoted = await checkUserVotedToday();
+            if (alreadyVoted) {
+                showMessage('error', '您今日已投票，请明天再来！');
                 return;
             }
             
@@ -1080,9 +1124,9 @@
             // 保存到本地存储
             saveVotesToStorage();
             
-            // 保存到云端
+            // 保存到云端（包含用户投票记录）
             const increaseVoters = !localStorage.getItem(STORAGE_KEY_VOTED + '_counted');
-            saveVotesToCloud(selectedIds, increaseVoters);
+            await saveVotesToCloud(selectedIds, increaseVoters);
             
             hasVotedToday = true;
             document.getElementById('voteStatus').textContent = '今日已投票，明天再来！';
@@ -1162,9 +1206,9 @@
                 `⏰ 距离投票截止还剩：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
         }
 
-        function init() {
+        async function init() {
             loadVotesFromStorage();
-            checkVoteStatus();
+            await checkVoteStatus();
             renderContestants();
             updateResults();
             updateStats();
